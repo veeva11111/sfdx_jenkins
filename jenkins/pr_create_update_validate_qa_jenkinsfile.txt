@@ -38,7 +38,7 @@ pipeline {
                 cd /var/lib/jenkins/workspace/delta
                 rm -rf *
                 cd /var/lib/jenkins/workspace/pr_create_update_validate_qa
-                sf sgd source delta --to "HEAD" --from "HEAD~1" --output /var/lib/jenkins/workspace/delta --generate-delta
+                sf sgd source delta --to "HEAD" --from "HEAD~1" --output /var/lib/jenkins/workspace/delta/ --generate-delta
                 cd /var/lib/jenkins/workspace/delta
                 ls
                 echo "In Build Step"
