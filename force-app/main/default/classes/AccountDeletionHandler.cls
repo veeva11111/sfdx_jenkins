@@ -1,4 +1,4 @@
-public with sharing class AccountDeletionHandler {//Added comment 1.
+public with sharing class AccountDeletionHandler {//Added comment
     public static void preventAccountDeletion(List<Account> accounts) {
         // Query for accounts that have related opportunities
         Set<Id> accountIdsWithOpportunities = new Set<Id>();
