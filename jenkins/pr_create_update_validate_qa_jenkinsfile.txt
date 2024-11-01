@@ -25,7 +25,7 @@ pipeline {
             steps {
                 // Authenticate Salesforce org by sfdx auth url.
                 sh '''
-				sfdx auth:sfdxurl:store -f sfdx_auth_url_qa.txt -s -a QA
+				sf auth:sfdxurl:store -f /root/sfdx_auth_url_qa.txt -s -a QA
 				pwd
                 '''
             }
