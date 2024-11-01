@@ -8,6 +8,6 @@
   "name": "sfdx_jenkins",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "62.0"
+  "sourceApiVersion": "62.0",
   "fetchDepth": 1 
 }
