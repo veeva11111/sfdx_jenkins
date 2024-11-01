@@ -35,8 +35,8 @@ pipeline {
                 // Build your application here (e.g., compile, package, etc.)
                 sh '''
                 pwd
-                cd /var/lib/jenkins/workspace
-                mkdir delta
+                cd /var/lib/jenkins/workspace/delta
+                rm -rf *
                 cd /var/lib/jenkins/workspace/pr_create_update_validate_qa
                 sf sgd source delta --to HEAD --from HEAD^ --output /var/lib/jenkins/workspace/delta --generate-delta
                 cd /var/lib/jenkins/workspace/delta
