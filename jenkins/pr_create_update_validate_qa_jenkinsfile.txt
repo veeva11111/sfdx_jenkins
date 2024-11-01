@@ -25,18 +25,25 @@ pipeline {
             steps {
                 // Authenticate Salesforce org by sfdx auth url.
                 sh '''
-				sf auth:sfdxurl:store -f /var/lib/jenkins/workspace/sfdxauthurls/sfdx_auth_url_qa.txt -s -a QA
-				pwd
+                pwd
+		sf auth:sfdxurl:store -f /var/lib/jenkins/workspace/sfdxauthurls/sfdx_auth_url_qa.txt -s -a QA
                 '''
             }
         }
-        stage('Build') {
+        stage('Build-Create Delta Package') {
             steps {
                 // Build your application here (e.g., compile, package, etc.)
                 sh '''
+                pwd
+                cd /var/lib/jenkins/workspace
+                mkdir delta
+                cd /var/lib/jenkins/workspace/pr_create_update_validate_qa
+                sf sgd source delta --to HEAD --from HEAD^ --output /var/lib/jenkins/workspace/delta
+              --generate-delta
+                cd /var/lib/jenkins/workspace/delta
                 ls
                 echo "In Build Step"
-				pwd
+		pwd
                 '''
             }
         }
