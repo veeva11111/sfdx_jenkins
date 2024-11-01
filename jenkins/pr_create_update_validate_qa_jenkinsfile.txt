@@ -36,7 +36,7 @@ pipeline {
                 sh '''
                 pwd
                 cd /var/lib/jenkins/workspace/delta
-                rm -rf *
+                sudo rm -rf *
                 cd /var/lib/jenkins/workspace/pr_create_update_validate_qa
                 sf sgd source delta --to "HEAD" --from "HEAD~1" --output "/var/lib/jenkins/workspace/delta" --generate-delta
                 cd /var/lib/jenkins/workspace/delta
