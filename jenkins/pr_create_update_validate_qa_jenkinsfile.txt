@@ -70,7 +70,7 @@ pipeline {
         }
     }
 
-    post {
+    /*post {
         success {
             // Actions to perform when the pipeline succeeds
             echo 'Pipeline succeeded!'
@@ -79,5 +79,9 @@ pipeline {
             // Actions to perform when the pipeline fails
             echo 'Pipeline failed!'
         }
-    }
+    }*/
+    post {
+        always {
+            cleanWs()
+        }
 }
