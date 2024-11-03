@@ -1,88 +1,84 @@
 pipeline {
+
     agent any
 
-    environment {
-        // Define environment variables here
-        MY_ENV_VAR = 'Custom Value'
+    options {
+        buildDiscarder logRotator( 
+            daysToKeepStr: '16', 
+            numToKeepStr: '10'
+        )
     }
 
     stages {
-        stage('Checkout') {
+        
+        stage('Cleanup Workspace') {
             steps {
-                script {
-                    // Clone the Git repository's master branch
-                    def gitRepoUrl = 'https://github.com/veeva11111/sfdx_jenkins.git'
-
-                    checkout([$class: 'GitSCM', 
-                        branches: [[name: '*/master']], 
-                        userRemoteConfigs: [[url: gitRepoUrl]], 
-                        extensions: [[$class: 'CleanBeforeCheckout'], [$class: 'CloneOption', noTags: false, shallow: true, depth: 1]]
-                    ])
-                }
-            }
-        }
-        stage('Authenticate') {
-            steps {
-                // Authenticate Salesforce org by sfdx auth url.
-                sh '''
-                pwd
-		sf auth:sfdxurl:store -f /var/lib/jenkins/workspace/sfdxauthurls/sfdx_auth_url_qa.txt -s -a QA
-                '''
-            }
-        }
-        stage('Build-Create Delta Package') {
-            steps {
-                // Build your application here (e.g., compile, package, etc.)
-                sh '''
-                pwd
-                cd /var/lib/jenkins/workspace/
-                if [ -d "delta" ]; then
-                 mv delta "delta_$(date +"%Y%m%d_%H%M%S")"
-                else
-                 echo "Directory 'delta' does not exist."
-                fi
-
-                mkdir delta
-                cd /var/lib/jenkins/workspace/pr_create_update_validate_qa
-                git checkout master
-                git pull
-                sf sgd source delta --to "HEAD" --from "HEAD~1" --output "/var/lib/jenkins/workspace/delta" --generate-delta
-                cd /var/lib/jenkins/workspace/delta
-                ls
-                echo "In Build Step"
-		pwd
-                '''
+                cleanWs()
+                sh """
+                echo "Cleaned Up Workspace For Project"
+                """
             }
         }
 
-        stage('Test') {
+        stage('Code Checkout') {
             steps {
-                // Run your tests (e.g., unit tests, integration tests)
-                sh 'echo "In Test Step"'
+                checkout([
+                    $class: 'GitSCM', 
+                    branches: [[name: '*/main']], 
+                    userRemoteConfigs: [[url: 'https://github.com/spring-projects/spring-petclinic.git']]
+                ])
             }
         }
 
-        stage('Deploy') {
+        stage('Unit Testing') {
             steps {
-                // Deploy your application to a target environment (e.g., staging, production)
-                sh 'echo "Value of ENV Varaible is "$MY_ENV_VAR""'
+                sh """
+                echo "Running Unit Tests"
+                """
             }
         }
-    }
 
-    /*post {
-        success {
-            // Actions to perform when the pipeline succeeds
-            echo 'Pipeline succeeded!'
+        stage('Code Analysis') {
+            steps {
+                sh """
+                echo "Running Code Analysis"
+                """
+            }
         }
-        failure {
-            // Actions to perform when the pipeline fails
-            echo 'Pipeline failed!'
+
+        stage('Deploy To Dev & QA') {
+            when {
+                branch 'develop'
+            }
+            steps {
+                sh """
+                echo "Building Artifact for Dev Environment"
+                """
+                sh """
+                echo "Deploying to Dev Environment"
+                """
+                sh """
+                echo "Deploying to QA Environment"
+                """
+            }
         }
-    }*/
-    post {
-        always {
-            cleanWs()
+
+        stage('Deploy To Staging and Pre-Prod Code') {
+            when {
+                branch 'main'
+            }
+            steps {
+                sh """
+                echo "Building Artifact for Staging and Pre-Prod Environments"
+                """
+                sh """
+                echo "Deploying to Staging Environment"
+                """
+                sh """
+                echo "Deploying to Pre-Prod Environment"
+                """
+            }
         }
-}
+
+    }   
 }
