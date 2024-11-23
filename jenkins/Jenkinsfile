@@ -1,26 +1,25 @@
 pipeline {
     agent any
     triggers {
-        githubPullRequest {
-            cron('H/5 * * * *')
-            useGitHubHooks()
-        }
+        // Trigger the pipeline on a pull request event
+        githubPullRequest()
+    }
+    environment {
+        TGT_BRANCH = 'tgtbranch'
     }
     stages {
-        stage('Build') {
+        stage('Checkout') {
             steps {
-                echo 'Building...'
+                script {
+                    // Check if the source branch name starts with 'R1F_' and target branch is 'tgtbranch'
+                    if (env.CHANGE_BRANCH.startsWith('R1F_') && env.TARGET_BRANCH == TGT_BRANCH) {
+                        checkout([$class: 'GitSCM', branches: [[name: "*/${env.CHANGE_BRANCH}"]], userRemoteConfigs: [[url: 'https://github.com/your-repo.git']]])
+                    } else {
+                        error "This pipeline only runs for PRs from branches starting with 'R1F_' to ${TGT_BRANCH}"
+                    }
+                }
             }
         }
-        stage('Test') {
-            steps {
-                echo 'Testing...'
-            }
-        }
-        stage('Deploy') {
-            steps {
-                echo 'Deploying...'
-            }
-        }
+        // Add more stages as needed
     }
 }
