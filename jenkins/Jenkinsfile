@@ -5,15 +5,15 @@ pipeline {
         githubPullRequest()
     }
     environment {
-        TGT_BRANCH = 'tgtbranch'
+        TGT_BRANCH = 'qa'
     }
     stages {
         stage('Checkout') {
             steps {
                 script {
-                    // Check if the source branch name starts with 'R1F_' and target branch is 'tgtbranch'
+                    // Check if the source branch name starts with 'R1F_' and target branch is 'qa'
                     if (env.CHANGE_BRANCH.startsWith('R1F_') && env.TARGET_BRANCH == TGT_BRANCH) {
-                        checkout([$class: 'GitSCM', branches: [[name: "*/${env.CHANGE_BRANCH}"]], userRemoteConfigs: [[url: 'https://github.com/your-repo.git']]])
+                        checkout([$class: 'GitSCM', branches: [[name: "*/${env.CHANGE_BRANCH}"]], userRemoteConfigs: [[url: 'https://github.com/veeva11111/sfdx_jenkins.git']]])
                     } else {
                         error "This pipeline only runs for PRs from branches starting with 'R1F_' to ${TGT_BRANCH}"
                     }
