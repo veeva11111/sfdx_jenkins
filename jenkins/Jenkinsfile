@@ -1,24 +1,25 @@
 pipeline {
     agent any
-
+    triggers {
+        // Trigger the pipeline on a pull request event
+        githubPullRequest()
+    }
+    environment {
+        TGT_BRANCH = 'qa'
+    }
     stages {
-        stage('Build') {
+        stage('Checkout') {
             steps {
-                echo 'Building...'
-                // Add your build steps here, e.g., compile code, run build tools
+                script {
+                    // Check if the source branch name starts with 'R1F_' and target branch is 'qa'
+                    if (env.CHANGE_BRANCH.startsWith('R1F_') && env.TARGET_BRANCH == TGT_BRANCH) {
+                        checkout([$class: 'GitSCM', branches: [[name: "*/${env.CHANGE_BRANCH}"]], userRemoteConfigs: [[url: 'https://github.com/veeva11111/sfdx_jenkins.git']]])
+                    } else {
+                        error "This pipeline only runs for PRs from branches starting with 'R1F_' to ${TGT_BRANCH}"
+                    }
+                }
             }
         }
-        stage('Test') {
-            steps {
-                echo 'Testing...'
-                // Add your test steps here, e.g., run unit tests
-            }
-        }
-        stage('Deploy') {
-            steps {
-                echo 'Deploying...'
-                // Add your deploy steps here, e.g., deploy to a server
-            }
-        }
+        // Add more stages as needed
     }
 }
